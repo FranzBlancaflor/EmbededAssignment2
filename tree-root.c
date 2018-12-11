@@ -63,10 +63,27 @@ PROCESS_THREAD(example_broadcast_process, ev, data)
 
   while(1) {
 
+    /* Every 10 Seconds */
+    etimer_set(&et, CLOCK_SECOND * 10);
+
     PROCESS_WAIT_EVENT();
+    
+    struct beacon *message;
+    
+    message = (struct beacon *) packetbuf_dataptr();
+
+    packetbuf_set_datalen(sizeof(struct beacon));
+
+    message->hop = hop;
+    
+    sequence = sequence + 1;
+
+    message->sequence = sequence;
 
     broadcast_send(&broadcast);
     
+    printf("Broadcast Message Sent");
+
     etimer_reset(&etimer);
   }
 
