@@ -58,10 +58,8 @@ PROCESS_THREAD(example_broadcast_process, ev, data)
 
   PROCESS_BEGIN();
 
-  //Open broadcast connection in band 129 and unicast connection in band 135
+  //Open broadcast connection in band 129
   broadcast_open(&broadcast, 129, &broadcast_call);
-
-  unicast_open(&uc, 135, &unicast_callbacks);
 
   while(1) {
 
@@ -87,8 +85,6 @@ PROCESS_THREAD(example_broadcast_process, ev, data)
 
     //Getting the sequence value
     message->sequence = sequence;
-  
-    printf("Message Sent");
 
     //Send broadcast
     broadcast_send(&broadcast);
