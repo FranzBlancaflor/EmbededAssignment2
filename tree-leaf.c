@@ -59,7 +59,7 @@ broadcast_recv(struct broadcast_conn *c, const linkaddr_t *from)
 
 	int newSequence = message->sequence;
 	
-	//If sequence recieved is bigger than sequence, then execute if statement
+	//If sequence received is bigger than sequence, then execute if statement
 	if(sequence < newSequence)
 	{ 
 		//Make hop count to the kop that was recieved a +1
@@ -130,7 +130,7 @@ PROCESS_THREAD(example_unicast_process, ev, data)
 
 	PROCESS_BEGIN();
 	
-	//Open broadcast connection in band 129 and unicast connection in band 135
+	//Open broadcast connection in band 129
 	broadcast_open(&broadcast, 129, &broadcast_call);
 
 	PROCESS_END();
