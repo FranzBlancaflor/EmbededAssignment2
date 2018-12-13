@@ -13,8 +13,11 @@ AUTOSTART_PROCESSES(&example_unicast_process);
 
 static int hop = -1;
 static int sequence = -1;
-static linkaddr_t sender;
 
+//RIME Address 
+static linkaddr_t destination;
+
+//Creating Struct Beacon
 struct beacon
 {	
 	int hop;
@@ -45,8 +48,10 @@ static void
 broadcast_recv(struct broadcast_conn *c, const linkaddr_t *from)
 {
 
+	//Creating pointer beacon called message
 	struct beacon *message;
 
+	//Pointer for data buffer
 	message = packetbuf_dataptr();
 
 	//Reading values received
@@ -54,45 +59,50 @@ broadcast_recv(struct broadcast_conn *c, const linkaddr_t *from)
 
 	int newSequence = message->sequence;
 	
+	//If sequence recieved is bigger than sequence, then execute if statement
 	if(sequence < newSequence)
 	{ 
-		
+		//Make hop count to the kop that was recieved a +1
 		hop = newHop + 1;
-
+		
+		//Make Sequence Received the new sequence
 		sequence = newSequence;
 
-		sender.u8[0] = from->u8[0];
+		destination.u8[0] = from->u8[0];
       
-		sender.u8[1] = from->u8[1];
+		destination.u8[1] = from->u8[1];
 
+		//Print Out
 		printf("Sequence Number: %d, Hop Number: %d\n", sequence, hop);
 
-		packetbuf_clear();
-
+		//Buffer Memory
 		message = (struct beacon *) packetbuf_dataptr(); 
 
+		//Getting the length
 		packetbuf_set_datalen(sizeof(struct beacon));
 
+		//Get current hop value
 		message->hop = hop;
 
+		//Get current sequence value
 		message->sequence= sequence;
 
 		broadcast_send(&broadcast);
 
 	}
 
-	else if(hop > newHop +1)
+	//This will only really run if we receive a broadcast from a node closer to the sink
+	//after we have already received a broadcast from a node further away.
+	else if(hop > newHop)
 	{
 
 		hop = newHop + 1;
 
-		sender.u8[0] = from->u8[0];
+		destination.u8[0] = from->u8[0];
       
-		sender.u8[1] = from->u8[1];
+		destination.u8[1] = from->u8[1];
 
 		printf("Sequence Number: %d, Hop Number: %d\n", sequence, hop);
-
-		packetbuf_clear();
 
 		message = (struct values *) packetbuf_dataptr(); 
 			
