@@ -14,7 +14,9 @@ AUTOSTART_PROCESSES(&example_broadcast_process);
 static int hop = 0;
 static int sequence = -1;
 
-static struct beacon{
+//Struct of the beacon that will be sent out
+static struct beacon
+{
 
 	int hop; 
 	int sequence;
@@ -59,7 +61,7 @@ PROCESS_THREAD(example_broadcast_process, ev, data)
   //Open broadcast connection in band 129 and unicast connection in band 135
   broadcast_open(&broadcast, 129, &broadcast_call);
 
-  unicast_open(&uc, 135, &unicast_callbacks);	
+  unicast_open(&uc, 135, &unicast_callbacks);
 
   while(1) {
 
@@ -68,23 +70,30 @@ PROCESS_THREAD(example_broadcast_process, ev, data)
 
     PROCESS_WAIT_EVENT();
     
+    //Making a pointer beacon called message
     struct beacon *message;
     
+    //Buffer Memory
     message = (struct beacon *) packetbuf_dataptr();
 
+    //Getting the length
     packetbuf_set_datalen(sizeof(struct beacon));
 
+    //Getting the hop value
     message->hop = hop;
     
+    //Increment the sequence value. So that when a new beacon is sent it will be a different number
     sequence = sequence + 1;
 
+    //Getting the sequence value
     message->sequence = sequence;
+  
+    printf("Message Sent");
 
+    //Send broadcast
     broadcast_send(&broadcast);
-    
-    printf("Broadcast Message Sent");
 
-    etimer_reset(&etimer);
+
   }
 
   PROCESS_END();
